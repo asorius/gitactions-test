@@ -37,6 +37,14 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm install
+
+      ## Lint
+      - name: Run linters
+        run: npm run lint
+      ## Unit tests
+      - name: Run unit tests
+        run: npm run test:unit
+
       - name: Build
         run: npm run build
       - name: Create 404 page
@@ -48,6 +56,17 @@ jobs:
         with:
           # Upload dist repository
           path: './dist'
+      ## E2E test our built application
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
